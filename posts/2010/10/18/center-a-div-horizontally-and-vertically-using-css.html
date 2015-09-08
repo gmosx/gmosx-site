@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Center a div horizontally and vertically using CSS</title><link rel=stylesheet href=/screen.css><link rel=icon type=image/png href=/favicon.png></head><body class=post><header><a href="/" class=logo><img src=/logo.png title="George Moschovitis"></a><div class=ads><script async="" src=//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><!--Gmosx.com fixed banner--><ins class=adsbygoogle style=display:inline-block;width:300px;height:250px data-ad-client=ca-pub-7352900569991313 data-ad-slot=1594652985></ins><script>
+	  (adsbygoogle = window.adsbygoogle || []).push({});
+	  </script></div></header><section><article><header><h1>Center a div horizontally and vertically using CSS</h1><span class=date>2010-10-18</span></header><p>A few days ago, I needed to center a mini site horizontally <em>and</em> vertically (don&#39;t you just love client requests?). It &#39;s easy to tackle the horizontal axis using CSS:</p><pre><code>&lt;style&gt;
+.hcenter {
+  margin: auto;
+  width: 320px;
+  height: 240px;
+}
+&lt;/style&gt;
+&lt;div class=&quot;hcenter&quot;&gt;Horizontally centered text&lt;/div&gt;
+</code></pre><p>On the contrary, I thought that CSS can&#39;t handle vertical centering (at least in a cross-browser compatible way) and a quick Google session ended fruitless as well. Instead, I wrote a small script to programmatically center the div inside the window. It took a couple of revisions to support resizing, eliminate flickering, ensure cross-browser compatibility, etc. but eventually I got it right.</p><p>Today though, I re-discovered an old trick:</p><pre><code>&lt;style&gt;
+.center {
+  position: absolute;
+  width: 320px;
+  height: 240px;
+  top: 50%;
+  left: 50%;
+  margin-top: -120px;
+  margin-left: -160px;
+}
+&lt;/style&gt;
+&lt;div class=&quot;center&quot;&gt;Horizontal and vertical centered text is possible.&lt;/div&gt;
+</code></pre><p>Duh!</p><p><strong>Update</strong>, 24 Oct 2010: Oh, there is a better way:</p><pre><code>line-height: ${height}px;
+</code></pre><p>where ${height} is equal to the height of the container.</p><p><strong>Update</strong>, 31 Aug 2014: <a href=http://www.html5rocks.com>HTML5 rocks</a>! You can do this easily now, using <a href=https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes>CSS flexbox layout</a>.</p><footer><div class=labels><span>Programming</span> <span>Web</span> <span>CSS</span></div></footer></article></section><section class=discussion><div id=disqus_thread></div><script type=text/javascript>
+    var disqus_shortname = 'gmosx';
+    var disqus_identifier = 'dd71dc83-d262-4ee6-a7da-d61db8a176f7';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=http://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></section><footer>&copy; 2006-2015 George Moschovitis. Follow me on <a href=http://www.github.com/gmosx>Github</a>, <a href=https://www.linkedin.com/in/gmosx>LinkedIn</a> and <a href=http://www.google.com/+GeorgeMoschovitis>Google+</a>.</footer></body></html>
