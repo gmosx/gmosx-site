@@ -1,12 +1,114 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>Closure: The world&#39;s most misunderstood JavaScript library</title><link rel=stylesheet href=/screen.css><link rel=icon type=image/png href=/favicon.png></head><body class=post><header><a href="/" class=logo><img src=/logo.png title="George Moschovitis"></a><div class=ads><script async="" src=//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><!--Gmosx.com fixed banner--><ins class=adsbygoogle style=display:inline-block;width:300px;height:250px data-ad-client=ca-pub-7352900569991313 data-ad-slot=1594652985></ins><script>
-	  (adsbygoogle = window.adsbygoogle || []).push({});
-	  </script></div></header><section><article><header><h1>Closure: The world&#39;s most misunderstood JavaScript library</h1><span class=date>2010-08-09</span></header><p>Last year, Google released the <a href=https://developers.google.com/closure>Closure suite of tools</a> for JavaScript development. It seemed too good to be true. A robust client-side JavaScript toolkit and UI framework was just what I missed in my stack.</p><p>I quickly downloaded the distribution and, like the rest of the world, was immediately disappointed: The source looked like Java, with long name spaces and getters/setters everywhere. The compiler looked interesting but difficult to setup and integrate in the build process. The templating engine looked ugly and required a compile step. I switched back to jQuery faster than you can say &#39;crap&#39;.</p><p>The problem is I wasn&#39;t fond of jQuery either. It &#39;s great for improving the interactivity of a page or adding special effects but leaves a lot to be desired when you are building a business-oriented Web application. As I am working on a series of Web applications for deployment through Google Apps Marketplace I decided to give Closure a second chance.</p><p>I followed a couple of online tutorials, browsed through the online API reference and the thoroughly commented source code and experimented with some demo apps. Eventually, the concepts of Closure started to sink in. But still, I had like hundreds of questions.</p><p>That&#39;s when I decided to buy the <a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">Closure, the definitive guide</a> book, available as a Rough Cut from O&#39;Reilly. What a great book! The <a href="http://blog.bolinfest.com/">author</a> painstakingly discuses the design rationale behind the Closure tools and exposes the benefits of the suite. The Closure library is genetically engineered to work with the Closure compiler and the Google developers behind it are really obsessed with performance, memory consuption, compatibility and code safety/debugability. The whole system is optimized for bigger development teams, not quick Web page hacks.</p><p>Among other things, I learned that:</p><ul><li>the powerful type system eliminates a large class of bugs</li><li>the compiler eliminates the long name spaces (and the corresponding run-time look ups)</li><li>getters/setters actually lead to better compression</li><li>you can split the client side code in multiple, independently loaded modules</li><li>the pseudoclassical pattern used for OOP is actually better than the functional pattern (when combined with the Closure compiler)</li><li>you can easily extend the Compiler with extra features...</li></ul><p>...and so much more. I don&#39;t want to spoil your fun, just grab this great book. It&#39;s the only way to really get into Closure. Heck, I would recommend this book even if you are not interested in Closure, it will make you a better JavaScript programmer.</p><p>Don&#39;t get me wrong, no tool is really perfect. Closure still has some issues: no CommonJS compatibility (but then again, CommonJS seems kind of dead these days), limited support from Google (they seem to be pushing GWT instead) and a shallow community around the project. Still, Closure suits my needs better than other solutions.</p><p>The verdict? Buy Bolin&#39;s <a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">excellent book</a> and give Closure a try!</p><footer><div class=labels><span>Programming</span> <span>JavaScript</span> <span>Book</span> <span>Review</span></div></footer></article></section><section class=discussion><div id=disqus_thread></div><script type=text/javascript>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Closure: The world's most misunderstood JavaScript library</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The personal blog of George Moschovitis. Posts about programming, design, finance, philosophy and life.">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic&subset=latin,greek" type="text/css">
+    <link rel="stylesheet" href="/screen.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-53425708-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body>
+    <header>
+    <a href="/" class="logo"><img src="/logo.png" title="George Moschovitis"></a>
+    <div class="ads"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Gmosx.com fixed banner -->
+<ins class="adsbygoogle"
+    style="display:inline-block;width:300px;height:250px"
+    data-ad-client="ca-pub-7352900569991313"
+    data-ad-slot="1594652985"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+</header>
+    <section>
+    <article>
+        <header>
+            <h1>Closure: The world's most misunderstood JavaScript library</h1>
+            <span class="date">09 Aug 2010</span>
+        </header>
+        <p>Last year, Google released the <a href="https://developers.google.com/closure">Closure suite of tools</a>
+for JavaScript development. It seemed too good to be true. A robust client-side
+JavaScript toolkit and UI framework was just what I missed in my stack.</p>
+<p>I quickly downloaded the distribution and, like the rest of the world, was
+immediately disappointed: The source looked like Java, with long name spaces
+and getters/setters everywhere. The compiler looked interesting but difficult
+to setup and integrate in the build process. The templating engine looked ugly
+and required a compile step. I switched back to jQuery faster than you can
+say ‘crap’.</p>
+<p>The problem is I wasn’t fond of jQuery either. It ’s great for improving the
+interactivity of a page or adding special effects but leaves a lot to be
+desired when you are building a business-oriented Web application. As I am
+working on a series of Web applications for deployment through Google Apps
+Marketplace I decided to give Closure a second chance.</p>
+<p>I followed a couple of online tutorials, browsed through the online API
+reference and the thoroughly commented source code and experimented with some
+demo apps. Eventually, the concepts of Closure started to sink in. But still,
+I had like hundreds of questions.</p>
+<p>That’s when I decided to buy the
+<a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">Closure, the definitive guide</a>
+book, available as a Rough Cut from O’Reilly. What a great book! The
+<a href="http://blog.bolinfest.com/">author</a> painstakingly discuses the design rationale
+behind the Closure tools and exposes the benefits of the suite. The Closure
+library is genetically engineered to work with the Closure compiler and the
+Google developers behind it are really obsessed with performance, memory
+consuption, compatibility and code safety/debugability. The whole system is
+optimized for bigger development teams, not quick Web page hacks.</p>
+<p>Among other things, I learned that:</p>
+<ul>
+<li>the powerful type system eliminates a large class of bugs</li>
+<li>the compiler eliminates the long name spaces (and the corresponding run-time look ups)</li>
+<li>getters/setters actually lead to better compression</li>
+<li>you can split the client side code in multiple, independently loaded modules</li>
+<li>the pseudoclassical pattern used for OOP is actually better than the functional pattern (when combined with the Closure compiler)</li>
+<li>you can easily extend the Compiler with extra features…</li>
+</ul>
+<p>…and so much more. I don’t want to spoil your fun, just grab this great book.
+It’s the only way to really get into Closure. Heck, I would recommend this book
+even if you are not interested in Closure, it will make you a better
+JavaScript programmer.</p>
+<p>Don’t get me wrong, no tool is really perfect. Closure still has some issues:
+no CommonJS compatibility (but then again, CommonJS seems kind of dead these
+days), limited support from Google (they seem to be pushing GWT instead) and
+a shallow community around the project. Still, Closure suits my needs better
+than other solutions.</p>
+<p>The verdict? Buy Bolin’s <a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">excellent book</a>
+and give Closure a try!</p>
+
+    </article>
+</section>
+<hr>
+    <section class="discussion">
+        <div id="disqus_thread"></div>
+<script type="text/javascript">
     var disqus_shortname = 'gmosx';
     var disqus_identifier = '9341e008-bc87-4721-ba83-50b7d528c66f';
 
     (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
-</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=http://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></section><footer>&copy; 2006-2015 George Moschovitis. Follow me on <a href=http://www.github.com/gmosx>Github</a>, <a href=https://www.linkedin.com/in/gmosx>LinkedIn</a> and <a href=http://www.google.com/+GeorgeMoschovitis>Google+</a>.</footer></body></html>
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </section>
+    <footer>
+    &copy; 2006-2018 George Moschovitis.
+    Follow me on <a href="https://twitter.com/gmosx" target="_blank">Twitter</a>,
+    <a href="https://github.com/gmosx" target="_blank">Github</a> and
+    <a href="https://linkedin.com/in/gmosx" target="_blank">LinkedIn</a>.
+</footer>
+</body>
+</html>

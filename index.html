@@ -1,26 +1,80 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title></title><link rel=stylesheet href=/screen.css><link rel=icon type=image/png href=/favicon.png></head><body class=post><header><a href="/" class=logo><img src=/logo.png title="George Moschovitis"></a><div class=ads><script async="" src=//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script><!--Gmosx.com fixed banner--><ins class=adsbygoogle style=display:inline-block;width:300px;height:250px data-ad-client=ca-pub-7352900569991313 data-ad-slot=1594652985></ins><script>
-	  (adsbygoogle = window.adsbygoogle || []).push({});
-	  </script></div></header><section><article><header><h1><a href=/posts/2015/02/18/protected-members-in-dart-classes.html>Protected members in Dart classes</a></h1><span class=date>2015-02-18</span></header><p>In general, <a href=http://dartlang.org>Dart</a> is a well designed language, but there are some rough edges. Take for example the limited privacy options for class members: Dart only provides for private members where the boundary of privacy is the library.</p><p>While private members can get you a long way, often, what you are really looking for is a protected member, i.e. a private member that is still visible to sub-classes even if they are defined in <em>different</em> libraries.</p><p>I guess, the canonical example is a UI framework offering e.g. a Button class. When extending the base class to create your own FancyButton, access to &#39;private&#39; implementation details is often required. Lack of protected access forces you to expose the implementation through public members.</p><p>Thankfully, there is a simple workaround. I will demonstrate with an example, leveraging the above-mentioned UI framework scenario. Let&#39;s start by defining a base Button class:</p><pre><code>library ui.button;
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>George Moschovitis</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The personal blog of George Moschovitis. Posts about programming, design, finance, philosophy and life.">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic&subset=latin,greek" type="text/css">
+    <link rel="stylesheet" href="/screen.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-// &#39;Public&#39; API
+  ga('create', 'UA-53425708-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+    <body>
+        <header>
+    <a href="/" class="logo"><img src="/logo.png" title="George Moschovitis"></a>
+    <div class="ads"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Gmosx.com fixed banner -->
+<ins class="adsbygoogle"
+    style="display:inline-block;width:300px;height:250px"
+    data-ad-client="ca-pub-7352900569991313"
+    data-ad-slot="1594652985"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+</header>
+        <section>
+    <article>
+        <header>
+            <h1><a href="posts/2015/02/18/protected-members-in-dart-classes.html">Protected members in Dart classes</a></h1>
+            <span class="date">18 Feb 2015</span>
+        </header>
+        <p>In general, <a href="http://dartlang.org/">Dart</a> is a well designed language, but there
+are some rough edges. Take for example the limited privacy options for class
+members: Dart only provides for private members where the boundary of privacy
+is the library.</p>
+<p>While private members can get you a long way, often, what you are really looking
+for is a protected member, i.e. a private member that is still visible to
+sub-classes even if they are defined in <em>different</em> libraries.</p>
+<p>I guess, the canonical example is a UI framework offering e.g. a Button class.
+When extending the base class to create your own FancyButton, access to
+‘private’ implementation details is often required. Lack of protected access
+forces you to expose the implementation through public members.</p>
+<p>Thankfully, there is a simple workaround. I will demonstrate with an example,
+leveraging the above-mentioned UI framework scenario. Let’s start by defining
+a base Button class:</p>
+<pre><code>library ui.button;
+
+// 'Public' API
 abstract class Button {
   factory Button({HtmlElement host}) = ButtonImpl; // Redirecting constructor
   void click();
 }
 
-// &#39;Protected&#39; implementation
+// 'Protected' implementation
 abstract class ButtonImpl implements Button {
   ButtonImpl({this.host});
 
-  int state = 0; // &#39;protected&#39; implementation detail.
+  int state = 0; // 'protected' implementation detail.
 
   @override
   void click() {
     this.state = 1;
-    host.classes.add(&#39;selected&#39;);
+    host.classes.add('selected');
   }
 }
-</code></pre><p>In your application, namespaced in another library, you define a custom button:</p><pre><code>library my.app.fancy_button; // notice, this is another library
+</code></pre>
+<p>In your application, name-spaced in another library, you define a custom button:</p>
+<pre><code>library my.app.fancy_button; // notice, this is another library
 
 abstract class FancyButton extends Button {
   factory FancyButton({String title, HtmlElement host}) = FancyButtonImpl;
@@ -31,39 +85,228 @@ class FancyButtonImpl extends ButtonImpl implements FancyButton {
 
   ButtonImpl({this.title, HtmlElement host}) : super(host: host);
 }
-</code></pre><p>You can use it like this:</p><pre><code>final button = new FancyButton(title: &quot;Cancel&quot;, host: element);
+</code></pre>
+<p>You can use it like this:</p>
+<pre><code>final button = new FancyButton(title: &quot;Cancel&quot;, host: element);
 
 button.title // =&gt; cannot access!
 button.state // =&gt; cannot access!
-</code></pre><p>You cannot access the &#39;protected&#39; members of FancyButton (or even Button&#39;s protected members, for that matter). As an added bonus, if you would like to side-step the protection (e.g. you are writing a unit-test and you would like to assert some implementation details) you can just instantiate the implementation class:</p><pre><code>final button = new FancyButtonImpl(title: &quot;Cancel&quot;, host: element);
+</code></pre>
+<p>You cannot access the ‘protected’ members of FancyButton (or even Button’s
+protected members, for that matter). As an added bonus, if you would like to
+side-step the protection (e.g. you are writing a unit-test and you would like
+to assert some implementation details) you can just instantiate the implementation
+class:</p>
+<pre><code>final button = new FancyButtonImpl(title: &quot;Cancel&quot;, host: element);
 
 expect(button.title, equals(&quot;Cancel&quot;)); // =&gt; true
-</code></pre><p>While this workaround is relatively straightforward, I really hope Dart&#39;s designers will introduce a @protected annotation in the future. An annotation that is statically asserted (e.g. by the IDE or dart-analyzer) would be an elegant and practical solution.</p></article></section><hr><section><article><header><h1><a href=/posts/2014/10/03/cool-retro-terminal.html>Cool retro terminal</a></h1><span class=date>2014-10-03</span></header><p>I dig command line terminals, I dig retro computing, I dig cool stuff. And I absolutely <em>love</em> this mind-blowing combination:<br><a href=https://github.com/Swordfish90/cool-retro-term>cool-retro-term</a>.</p><p><img src=/posts/2014-10-03/amber-cool-retro-term.png alt="Amber flavor"></p><p><img src=/posts/2014-10-03/green-cool-retro-term.png alt="Green flavor"></p><p><img src=/posts/2014-10-03/scan-cool-retro-term.png alt=Scanlines></p></article></section><hr><section><article><header><h1><a href=/posts/2014/08/21/input-font-system.html>Input font system</a></h1><span class=date>2014-08-21</span></header><p>Apart from writing code for fun and profit, I have a thing about fonts. It&#39;s only natural then that programming fonts have a special place in my heart. Monospaced fonts are the defacto standard, but lately a radical idea came to my attention: <a href="http://input.fontbureau.com/info/">using proportionally spaced fonts for code</a> and leaving the actual typesetting to the editor.</p><p>While I am still not convinced, I have to admit that the proponents of the idea, came up with a beautiful family of programming fonts called &#39;<a href="http://input.fontbureau.com/">Input</a>&#39;.</p><p><img src=/posts/2014-08-21/input-font.png alt="Input font gallery"></p><p>What can I say, it&#39;s my new favorite :)</p></article></section><hr><section><article><header><h1><a href=/posts/2014/08/07/luma.html>Luma</a></h1><span class=date>2014-08-07</span></header><p></p><p>So <a href="http://www.makeuseof.com/tag/retrovision-enjoy-oldschool-demo-scene-modern-pc-stuff-watch/">old-school</a>, yet so modern. I especially like the music!</p><p></p><div class=video><iframe title="YouTube video player" width=700 height=394 src=http://www.youtube.com/embed/WBuoyegCeXI frameborder=0 allowfullscreen=""></iframe></div></article></section><hr><section><article><header><h1><a href=/posts/2014/08/05/were-are-we-today.html>Were are we today?</a></h1><span class=date>2014-08-05</span></header><p>&rarr; <a href=http://continuations.com/post/92628450440/is-it-1880-or-1914>Is it 1880 or 1914?</a></p><blockquote><p>A lot about where we are today has similar characteristics. We have all of the ingredients for an information society in place: a global network that connects everyone, rapidly improving machine learning and automation, additive manufacturing and robotics (to name just a few key ingredients). We also have globalized many aspects of the economy with global corporations and supply chains.</p><p>Yet again the political leadership throughout the world is still largely thinking in industrial terms, including emphasizing the nation state as the geographic organizing principle (and playing up ethnic and religious differences). Once again we also have large groups of people who feel pushed around or left behind by the emerging information economy.</p></blockquote><p>I am consistently surprised that people around me don&#39;t realize what is <em>really happening</em> in the world today. We live in dangerous times. You better expect (and prepare for) some disruptive changes within this decade. And I am not talking about Valey-style, hipster disruption here...</p></article></section><hr><section><article><header><h1><a href=/posts/2014/08/04/right-size-precision.html>Right-size precision</a></h1><span class=date>2014-08-04</span></header><p>&rarr; <a href=http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf>The need to right-size precision to save energy, bandwidth, storage, and electrical power</a></p><p>The representation of real numbers within computers leaves a lot to be desired. Every programmer is bitten at some point by floating point precision issues. Open a JavaScript console and type 0.1 + 0.2 for the canonical example. <a href=http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf>This fascinating paper</a> frames the problem in whole new perspective and proposes a couple of innovative solutions. As the author says...</p><blockquote><p>Let’s make computer math much smarter than what it was in 1914!</p></blockquote></article></section><hr><section><article><header><h1><a href=/posts/2014/08/03/no-juju-for-you.html>No Juju for you!</a></h1><span class=date>2014-08-03</span></header><p>&rarr; <a href=http://www.turnkeylinux.org/blog/ubuntu-not-invented-here-syndrome>Ubuntu&#39;s Not Invented Here syndrome</a></p><p>A well-articulated analysis, the following quote particularly resonated with me:</p><blockquote><p>I don&#39;t think that Canonical is bad at what it does. It&#39;s just that they&#39;re rarely the best and being mediocre (or even second best) isn&#39;t good enough when the tournament effect is at work. The winner takes home the pot (e.g., becomes the new standard) and Canonical isn&#39;t winning.</p></blockquote><p>Switching to Unity and competing on so many fronts was a mistake, Canonical is spread too thin. Still, the latest LTS release is pretty solid and pleasingly refined. I plan to stick with Ubuntu some more, these days my mantra is to be conservative with platform changes. If <a href=https://wiki.ubuntu.com/UnityNextSpec>things</a> don&#39;t work-out, there is always a safe <a href=http://www.debian.org>fallback</a>.</p></article></section><hr><section><article><header><h1><a href=/posts/2011/09/18/The-evolution-of-browsers.html>The evolution of browsers</a></h1><span class=date>2011-09-18</span></header><p>A new month, <a href=http://chrome.blogspot.com/2011/09/new-stable-release-of-chrome-expanding.html>a new version of Chrome is released</a>. Don&#39;t get me wrong, <a href="http://webaudio.github.io/web-audio-api/">Web Audio</a> is interesting (one more nail in the coffin for Flash) and <a href=https://developer.chrome.com/native-client>Native Client</a> may be a solution to the primary roadblock in the evolution of the Web towards an application platform (namely JavaScript).</p><p>Still, I would prefer browser vendors to go after some low-hanging fruit first. I mean, emerging HTML5 technologies are cool and all, but how about concentrating on the actual HTML part first? How about implementing common forms controls (date/time pickers, rich text editors, improved validation and more)? How about fully implementing <a href=http://www.w3.org/TR/CSS2/page.html>CSS Paged Media</a>? How about implementing <a href="http://www.w3.org/Math/">MathML</a>? How about replacing .pdf with .html first and then focus on killing Flash?</p><p>And while we are at it, how about improving bookmark management in Chrome? The current interface leaves a lot to be desired (i.g. multiple categorization of bookmarks using tags and/or hierarchical folders, similar to the categorization available in Google Docs).</p><p>In short, I would like to see more pragmatic features sooner rather than later.</p></article></section><hr><section><article><header><h1><a href=/posts/2011/03/17/nasty-java-catch.html>Nasty Java catch</a></h1><span class=date>2011-03-17</span></header><p>Some time ago, I wrote about <a href=/posts/2009/08/nasty-javascript-catch.html>a nasty JavaScript catch</a>. Well, it seems that no language is immune from nasty surprises, so here comes one for Java:</p><pre><code>BigDecimal value = new BigDecimal(&quot;0.31&quot;);
+</code></pre>
+<p>While this workaround is relatively straightforward, I really hope Dart’s
+designers will introduce a @protected annotation in the future. An annotation
+that is statically asserted (e.g. by the IDE or dart-analyzer) would be an
+elegant and practical solution.</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/10/03/cool-retro-terminal.html">Cool retro terminal</a></h1>
+            <span class="date">03 Oct 2014</span>
+        </header>
+        <p>I dig command line terminals, I dig retro computing, I dig cool stuff. And I
+absolutely love this mind-blowing combination:</p>
+<p><a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term</a></p>
+<p><img src="/posts/2014/10/03/amber-cool-retro-term.png" alt="Amber flavor" /></p>
+<p><img src="/posts/2014/10/03/green-cool-retro-term.png" alt="Green flavor" /></p>
+<p><img src="/posts/2014/10/03/scan-lines-cool-retro-term.png" alt="Scan lines" /></p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/08/21/input-font-system.html">Input font system</a></h1>
+            <span class="date">21 Aug 2014</span>
+        </header>
+        <p>Apart from writing code for fun and profit, I have a thing about fonts. It’s
+only natural then that programming fonts have a special place in my heart.
+Monospaced fonts are the de facto standard, but lately a radical idea came to my
+attention: <a href="http://input.fontbureau.com/info/">using proportionally spaced fonts for code</a>
+and leaving the actual typesetting to the editor.</p>
+<p>While I am still not convinced, I have to admit that the proponents of the idea,
+came up with a beautiful family of programming fonts
+called <a href="http://input.fontbureau.com/">Input</a>.</p>
+<p><img src="posts/2014/08/21/input-font.png" alt="Input font gallery" /></p>
+<p>What can I say, it’s my new favorite :)</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/08/07/luma.html">Luma</a></h1>
+            <span class="date">07 Aug 2014</span>
+        </header>
+        
+<p>
+So <a href="http://www.makeuseof.com/tag/retrovision-enjoy-oldschool-demo-scene-modern-pc-stuff-watch/">old-school</a>,
+yet so modern. I especially like the music!
+</p>
+<div class="video">
+  <iframe title="YouTube video player" width="658" height="371" src="http://www.youtube.com/embed/WBuoyegCeXI" frameborder="0" allowfullscreen=""></iframe>
+</div>
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/08/05/were-are-we-today.html">Were are we today?</a></h1>
+            <span class="date">05 Aug 2014</span>
+        </header>
+        <p>→ <a href="http://continuations.com/post/92628450440/is-it-1880-or-1914">Is it 1880 or 1914?</a></p>
+<blockquote>
+<p>A lot about where we are today has similar characteristics. We have all of the
+ingredients for an information society in place: a global network that
+connects everyone, rapidly improving machine learning and automation, additive
+manufacturing and robotics (to name just a few key ingredients). We also have
+globalized many aspects of the economy with global corporations and supply
+chains.</p>
+<p>Yet again the political leadership throughout the world is still largely
+thinking in industrial terms, including emphasizing the nation state as the
+geographic organizing principle (and playing up ethnic and religious
+differences). Once again we also have large groups of people who feel pushed
+around or left behind by the emerging information economy.</p>
+</blockquote>
+<p>I am consistently surprised that people around me don’t realize what is <em>really
+happening</em> in the world today. We live in dangerous times. You better expect
+(and prepare for) some disruptive changes within this decade. And I am not talking
+about Valey-style, hipster disruption here…</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/08/04/right-size-precision.html">Right-size precision</a></h1>
+            <span class="date">04 Aug 2014</span>
+        </header>
+        <p>→ <a href="http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf">The need to right-size precision to save energy, bandwidth, storage, and electrical power</a></p>
+<p>The representation of real numbers within computers leaves a lot to be desired.
+Every programmer is bitten at some point by floating point precision issues.
+Open a JavaScript console and type 0.1 + 0.2 for the canonical example. <a href="http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf">This
+fascinating paper</a>
+frames the problem in whole new perspective and proposes a couple of innovative
+solutions. As the author says…</p>
+<blockquote>
+<p>Let’s make computer math much smarter than what it was in 1914!</p>
+</blockquote>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2014/08/03/ubuntus-not-invented-here-syndrome.html">No Juju for you!</a></h1>
+            <span class="date">03 Aug 2014</span>
+        </header>
+        <p>→ <a href="http://www.turnkeylinux.org/blog/ubuntu-not-invented-here-syndrome">Ubuntu’s Not Invented Here syndrome</a></p>
+<p>A well-articulated analysis, the following quote particularly resonated with me:</p>
+<blockquote>
+<p>I don’t think that Canonical is bad at what it does. It’s just that they’re
+rarely the best and being mediocre (or even second best) isn’t good enough
+when the tournament effect is at work. The winner takes home the pot (e.g.,
+becomes the new standard) and Canonical isn’t winning.</p>
+</blockquote>
+<p>Switching to Unity and competing on so many fronts was a mistake, Canonical is
+spread too thin. Still, the latest LTS release is pretty solid and pleasingly
+refined. I plan to stick with Ubuntu some more, these days my mantra is to be
+conservative with platform changes. If <a href="https://wiki.ubuntu.com/UnityNextSpec">things</a>
+don’t work-out, there is always a safe <a href="http://www.debian.org">fallback</a>.</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2011/09/18/The-evolution-of-browsers.html">The evolution of browsers</a></h1>
+            <span class="date">18 Sep 2011</span>
+        </header>
+        <p>A new month, <a href="http://chrome.blogspot.com/2011/09/new-stable-release-of-chrome-expanding.html">a new version of Chrome is released</a>.
+Don’t get me wrong, <a href="http://webaudio.github.io/web-audio-api/">Web Audio</a> is
+interesting (one more nail in the coffin for Flash) and
+<a href="https://developer.chrome.com/native-client">Native Client</a> may be
+a solution to the primary roadblock in the evolution of the Web towards an
+application platform (namely JavaScript).</p>
+<p>Still,  I would prefer browser vendors to go after some low-hanging fruit first.
+I mean, emerging HTML5 technologies are cool and all, but how about
+concentrating on the actual HTML part first? How about implementing common
+forms controls (date/time pickers, rich text editors, improved validation and
+more)? How about fully implementing <a href="http://www.w3.org/TR/CSS2/page.html">CSS Paged Media</a>?
+How about implementing <a href="http://www.w3.org/Math/">MathML</a>? How about replacing
+.pdf with .html first and then focus on killing Flash?</p>
+<p>And while we are at it, how about improving bookmark management in Chrome?
+The current interface leaves a lot to be desired (i.g. multiple categorization
+of bookmarks using tags and/or hierarchical folders, similar to the
+categorization available in Google Docs).</p>
+<p>In short, I would like to see more pragmatic features sooner rather than later.</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2011/03/17/nasty-java-catch.html">Nasty Java catch</a></h1>
+            <span class="date">17 Mar 2011</span>
+        </header>
+        <p>Some time ago, I wrote about <a href="/posts/2009/08/nasty-javascript-catch.html">a nasty JavaScript catch</a>. Well, it seems that no
+language is immune from nasty surprises, so here comes one for Java:</p>
+<pre><code>BigDecimal value = new BigDecimal(&quot;0.31&quot;);
 BigDecimal oldValue = new BigDecimal(&quot;0.34&quot;);
 BigDecimal ratio = value.divide(oldValue);
-</code></pre><p>throws:</p><pre><code>java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
-</code></pre><p>Funky, huh? Let me offer a quick fix:</p><pre><code>BigDecimal ratio = value.divide(oldValue, BigDecimal.ROUND_HALF_EVEN);
-</code></pre><p>For some intuition (in <a href=http://www.khanacademy.org>Khan</a>&#39;s parlance), have a look <a href="http://jaydeepm.wordpress.com/2009/06/04/bigdecimal-and-non-terminating-decimal-expansion-error/">here</a>.</p></article></section><hr><section><article><header><h1><a href=/posts/2011/02/04/ultra-geeky-holiday-e-card.html>Ultra geeky holiday e-Card</a></h1><span class=date>2011-02-04</span></header><p></p><p>This came to my attention and I had to share it:</p><p></p><div class=video><iframe title="YouTube video player" width=700 height=394 src=http://www.youtube.com/embed/VRdZcA41EJc frameborder=0 allowfullscreen=""></iframe></div></article></section><hr><section><article><header><h1><a href=/posts/2010/10/18/center-a-div-horizontally-and-vertically-using-css.html>Center a div horizontally and vertically using CSS</a></h1><span class=date>2010-10-18</span></header><p>A few days ago, I needed to center a mini site horizontally <em>and</em> vertically (don&#39;t you just love client requests?). It &#39;s easy to tackle the horizontal axis using CSS:</p><pre><code>&lt;style&gt;
-.hcenter {
-  margin: auto;
-  width: 320px;
-  height: 240px;
-}
-&lt;/style&gt;
-&lt;div class=&quot;hcenter&quot;&gt;Horizontally centered text&lt;/div&gt;
-</code></pre><p>On the contrary, I thought that CSS can&#39;t handle vertical centering (at least in a cross-browser compatible way) and a quick Google session ended fruitless as well. Instead, I wrote a small script to programmatically center the div inside the window. It took a couple of revisions to support resizing, eliminate flickering, ensure cross-browser compatibility, etc. but eventually I got it right.</p><p>Today though, I re-discovered an old trick:</p><pre><code>&lt;style&gt;
-.center {
-  position: absolute;
-  width: 320px;
-  height: 240px;
-  top: 50%;
-  left: 50%;
-  margin-top: -120px;
-  margin-left: -160px;
-}
-&lt;/style&gt;
-&lt;div class=&quot;center&quot;&gt;Horizontal and vertical centered text is possible.&lt;/div&gt;
-</code></pre><p>Duh!</p><p><strong>Update</strong>, 24 Oct 2010: Oh, there is a better way:</p><pre><code>line-height: ${height}px;
-</code></pre><p>where ${height} is equal to the height of the container.</p><p><strong>Update</strong>, 31 Aug 2014: <a href=http://www.html5rocks.com>HTML5 rocks</a>! You can do this easily now, using <a href=https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes>CSS flexbox layout</a>.</p></article></section><hr><section><article><header><h1><a href=/posts/2010/09/27/i-love-node.html>I ♥ no.de</a></h1><span class=date>2010-09-27</span></header><p>A few days ago, <a href=http://www.joyent.com>Joyent</a> unveiled the public beta of their NodeJS-based platform-as-a-service contender. Well, this service rocks! From the great <a href=http://no.de>no.de</a> domain name to the RESTful procurement/management API and the git-powered deployment, everything radiates coolness.</p><p>Even though I posted my hearts to the API end-point (/♥ !!), I haven&#39;t received any coupons in return. So there is no review for you. However, the elegant simplicity of the API (combined with the clean-slate design of the underlying NodeJS infrastructure) lights my geeky heart (pun intended).</p><p><a href=/posts/2010/06/23/ringojs-vs-nodejs.html>I am not a NodeJS fan-boy</a>. These days I am evaluating Java/GWT (so far I am positively surprised but I &#39;ll reserve my final judgement for a future post). So, you understand, like everyone who feels overwhelmed by the complexity of the Java ecosystem, I can appreciate a refreshingly simple alternative.</p></article></section><hr><section><article><header><h1><a href=/posts/2010/08/28/we-are-what-we-repeatedly-do.html>We are what we repeatedly do</a></h1><span class=date>2010-08-28</span></header><blockquote><p>We are what we repeatedly do. Excellence, then, is not an act, but a habit.</p></blockquote><p><a href=http://en.wikipedia.org/wiki/Aristotle>Aristotle</a>, 384-322 BC</p></article></section><hr><section><article><header><h1><a href=/posts/2010/08/09/closure-the-worlds-most-misunderstood-javascript-library.html>Closure: The world&#39;s most misunderstood JavaScript library</a></h1><span class=date>2010-08-09</span></header><p>Last year, Google released the <a href=https://developers.google.com/closure>Closure suite of tools</a> for JavaScript development. It seemed too good to be true. A robust client-side JavaScript toolkit and UI framework was just what I missed in my stack.</p><p>I quickly downloaded the distribution and, like the rest of the world, was immediately disappointed: The source looked like Java, with long name spaces and getters/setters everywhere. The compiler looked interesting but difficult to setup and integrate in the build process. The templating engine looked ugly and required a compile step. I switched back to jQuery faster than you can say &#39;crap&#39;.</p><p>The problem is I wasn&#39;t fond of jQuery either. It &#39;s great for improving the interactivity of a page or adding special effects but leaves a lot to be desired when you are building a business-oriented Web application. As I am working on a series of Web applications for deployment through Google Apps Marketplace I decided to give Closure a second chance.</p><p>I followed a couple of online tutorials, browsed through the online API reference and the thoroughly commented source code and experimented with some demo apps. Eventually, the concepts of Closure started to sink in. But still, I had like hundreds of questions.</p><p>That&#39;s when I decided to buy the <a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">Closure, the definitive guide</a> book, available as a Rough Cut from O&#39;Reilly. What a great book! The <a href="http://blog.bolinfest.com/">author</a> painstakingly discuses the design rationale behind the Closure tools and exposes the benefits of the suite. The Closure library is genetically engineered to work with the Closure compiler and the Google developers behind it are really obsessed with performance, memory consuption, compatibility and code safety/debugability. The whole system is optimized for bigger development teams, not quick Web page hacks.</p><p>Among other things, I learned that:</p><ul><li>the powerful type system eliminates a large class of bugs</li><li>the compiler eliminates the long name spaces (and the corresponding run-time look ups)</li><li>getters/setters actually lead to better compression</li><li>you can split the client side code in multiple, independently loaded modules</li><li>the pseudoclassical pattern used for OOP is actually better than the functional pattern (when combined with the Closure compiler)</li><li>you can easily extend the Compiler with extra features...</li></ul><p>...and so much more. I don&#39;t want to spoil your fun, just grab this great book. It&#39;s the only way to really get into Closure. Heck, I would recommend this book even if you are not interested in Closure, it will make you a better JavaScript programmer.</p><p>Don&#39;t get me wrong, no tool is really perfect. Closure still has some issues: no CommonJS compatibility (but then again, CommonJS seems kind of dead these days), limited support from Google (they seem to be pushing GWT instead) and a shallow community around the project. Still, Closure suits my needs better than other solutions.</p><p>The verdict? Buy Bolin&#39;s <a href="http://www.amazon.com/gp/redirect.html?ie=UTF8&amp;location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26x%3D0%26ref_%3Dnb%5Fsb%5Fss%5Fi%5F0%5F10%26fsc%3D14%26ih%3D12%5F1%5F0%5F1%5F0%5F1%5F0%5F1%5F0%5F1.70%5F207%26y%3D0%26field-keywords%3Dclosure%2520the%2520definitive%2520guide%26url%3Dsearch-alias%253Daps%26sprefix%3DClosure%2520th&amp;tag=httpwwwreizuc-20&amp;linkCode=ur2&amp;camp=1789&amp;creative=390957">excellent book</a> and give Closure a try!</p></article></section><hr><section><article><header><h1><a href=/posts/2010/06/23/ringojs-vs-nodejs.html>RingoJS vs NodeJS</a></h1><span class=date>2010-06-23</span></header><p>Unless you &#39;ve been living in a cave for the last year, you know that server side (better: &#39;general purpose&#39;) JavaScript is all the rage. Everything started with CommonJS: the emerging standard spawned an ecosystem of compatible implementations competing against each other while advancing the JavaScript state of the art.</p><p>Then, NodeJS happened: An async only JavaScript platform, powered by V8, not really interested in CommonJS conformance. RY (the new DHH) managed to grab the attention of the developer community with cool marketing, leaving other implementations in the shadows. One such great implementation that deserves more attention is RingoJS.</p><p>Some time ago I switched from Narwhal to Ringo and never looked back. I strongly believe that Ringo is the preeminent CommonJS implementation. Here is why:</p><ul><li>Ringo is quite possibly the most conformant CommonJS implementation, certainly more conformant than Narwhal and Node.</li><li>Ringo is <em>fast</em>. If you tried Narwhal/Rhino and found start up times lacking or module reloading unacceptably slow check out Ringo! You will be pleasantly surprised. And while v8 may be faster than Rhino, the JVM is still quite optimized for server side environments. (And btw, in a modern Web application, time spent running the server side script is a negligible percentage of the total request/response cycle. You should probably work on optimizing network issues, database interactions, client side rendering, etc).</li><li>Ringo is mature, stable and crash free. Ringo is the evolution of Helma, one of the first server side JavaScript platforms (more than 10 years in development). It&#39;s also based on the mature Java platform. Contrast this to reports of NodeJS crashes.</li><li>Access to the gazillion of Java libraries. There is no merit in reinventing the wheel, just reuse code from the Java ecosystem. The integration between Java and JavaScript is seamless.</li><li>Windows compatibility. OK, Windows sucks, but still, a lot of engineers use Windows as a development platform. Ringo apps work on Windows out of the box.</li><li>Support for synchronous and asynchronous APIs. Use what&#39;s best for your application.</li><li>Thanks to AppengineJS you can run your Ringo applications on Google&#39;s scalable infrastructure.</li><li>The lead developer is extremely talented and friendly.</li><li>Stop drinking the Kool-Aid! Engineer your application on top of a mature, conformant and compatible platform: RingoJS.</li></ul><p><em>Update</em>: Removed a controversial link.</p></article></section><hr><section><article><header><h1><a href=/posts/2010/04/22/miscellanea.html>Miscellanea</a></h1><span class=date>2010-04-22</span></header><p>I &#39;m not in the mood for a long post, so here are some random thoughts in aggregate form:</p><h2 id=f8>f8</h2><p>The new Facebook Social Plugins are FriendConnect done right. FriendConnect has so much potential yet the current implementation leaves a lot to be desired (to say the least). Moreover, the <a href=https://developers.facebook.com/docs/graph-api>Graph API</a> is a bold step forward towards the machine readable Web (Web 3.0 / Semantic Web if you will). The &#39;Like&#39; button is an obvious (yet powerful) idea that Google should have implemented a long time ago.</p><h2 id=-is-wrong>π is wrong</h2><p>I always thought that &#39;π&#39; should be the number known as &#39;2π&#39;. Then &#39;π&#39; would be the perimeter of the unit circle, angle measurements would be more intuitive (90 degrees == π/4, 180 degrees == π/2, 360 degrees = π, ie a full &#39;cycle&#39; is π radians) and a lot of formulas would be simplified:</p><pre><code>p = πr, i.e. scale the unit perimeter by the radius,
-sin(x+π) = sin(x), i.e. the period of the trigonometric functions is π,
-</code></pre><p>etc. At the moment π is the sum of the angles in a triangle and the perimeter of a circle of with a diameter equal to 1 (doesn&#39;t this look awkward to you?). Read <a href=http://www.math.utah.edu/~palais/pi.pdf>π is wrong</a> for a better treatment of the argument.</p><h2 id=iphoneos-tos>iPhoneOS TOS</h2><p>The latest iPhoneOS TOS made a lot of developers angry. I don&#39;t agree. One of the problems in our profession is what I call a Babel situation: So many different languages and platforms hinder cooperation. Finding and integrating engineers into a software development team is a pain. Thus, having a single platform (iPhoneOS), a single system language (Objective C) and single scripting/application language (JavaScript) is refreshing.</p></article></section><hr><section><article><header><h1><a href=/posts/2010/02/07/the-web-is-the-new-unix.html>The Web is the new UNIX</a></h1><span class=date>2010-02-07</span></header><blockquote><p>The Web is the new UNIX, UNIX is the new BIOS.</p></blockquote><p><a href=http://www.gmosx.com>George Moschovitis</a>, 2010</p></article></section><hr><section><article><header><h1><a href=/posts/2010/01/21/new-blog-platform.html>New blog platform</a></h1><span class=date>2010-01-21</span></header><p>Old time readers of my blog know that I regularly change the platform that I use. Lately, I was using Google&#39;s <a href="http://www.blogger.com/">Blogger</a>, but I wasn&#39;t happy with the layout. Before that, I used a lovely, custom-made, <a href=#>Ruby-based CMS</a>. But since I am fed-up with Ruby (after 8 years, no less) it was difficult to maintain.</p><p>Therefore, I decided to utilise my <a href=https://github.com/gmosx/appengine>AppengineJS</a> and <a href=https://github.com/gmosx/nitro>Nitro</a> open source projects to create a new platform for my blog. This new version is implemented in JavaScript, the language of the Web, and one of the languages I dig these days (the other being <a href=http://www.haskell.org>Haskell</a>). Even though I am relatively pleased with the result (and the clean code behind it), there is a lot of work to be done, when I find the time.</p><p>In the meantime, please subscribe to my feed and check this blog often for interesting content. Oh, and bug reports are always welcome ;-)</p><p>Update: This blog is not based on the <a href=https://github.com/gmosx/appengine-blog-example>blog-gae example</a> source code. In fact, the blog-gae example is outdated and does not reflect the latest improvements in Nitro and AppengineJS. Perhaps, I will release the mini CMS behind this blog as an example if there is sufficient demand...</p></article></section><hr><section><article><header><h1><a href=/posts/2009/07/23/the-open-fund.html>The Open Fund</a></h1><span class=date>2009-07-23</span></header><p>I had the pleasure of attending the first <a href="http://www.opencoffee.gr/">Open Coffee</a> meeting, two years ago. From the humble beginning (10 geeks in a small cafe) the project went from strength to strength. Typically, around 300 people participate in the monthly event where aspiring entrepreneurs present their ideas.</p><p>I always thought that Open Coffee was just one part of the equation: surely, networking opportunities are important for bootstrapping an ecosystem of entrepreneurs. But a great idea doesn&#39;t guarantee a successful business. Neither does technical savvy.</p><p>A business needs funding, legal consulting, prudent accounting and strong management to flourish. <a href=http://theopenfund.com>The OpenFund</a> is Open Coffee&#39;s long awaited take on this problem. Borrowing the concept of <a href=http://ycombinator.com>YCombinator</a> and similar funds, OpenFund will hopefully spark a number of successful start-ups in the region.</p><p>The management team kindly accepted me as an adviser to the fund. I am fond of the idea of helping young people avoid the many mistakes I made in the last decade.</p></article></section><hr><section class=more>Read older posts in the <a href=/archive.html>archive</a>, or subscribe to the <a href=/atom.xml>feed</a>.</section><footer>&copy; 2006-2015 George Moschovitis. Follow me on <a href=http://www.github.com/gmosx>Github</a>, <a href=https://www.linkedin.com/in/gmosx>LinkedIn</a> and <a href=http://www.google.com/+GeorgeMoschovitis>Google+</a>.</footer></body></html>
+</code></pre>
+<p>throws:</p>
+<pre><code>java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
+</code></pre>
+<p>Funky, huh? Let me offer a quick fix:</p>
+<pre><code>BigDecimal ratio = value.divide(oldValue, BigDecimal.ROUND_HALF_EVEN);
+</code></pre>
+<p>For some intuition (in <a href="http://www.khanacademy.org">Khan</a>’s parlance), have a look <a href="http://jaydeepm.wordpress.com/2009/06/04/bigdecimal-and-non-terminating-decimal-expansion-error/">here</a>.</p>
+
+    </article>
+</section>
+<hr>
+<section>
+    <article>
+        <header>
+            <h1><a href="posts/2011/02/04/ultra-geeky-holiday-e-card.html">Ultra geeky holiday e-Card</a></h1>
+            <span class="date">04 Feb 2011</span>
+        </header>
+        
+<p>
+This came to my attention and I had to share it:
+</p>
+<div class="video"><iframe title="YouTube video player" width="658" height="371" src="http://www.youtube.com/embed/VRdZcA41EJc" frameborder="0" allowfullscreen=""></iframe></div>
+
+    </article>
+</section>
+<hr>
+        <section class="more">
+            Read older posts in the <a href="/archive.html">archive</a>.
+        </section>
+        <footer>
+    &copy; 2006-2018 George Moschovitis.
+    Follow me on <a href="https://twitter.com/gmosx" target="_blank">Twitter</a>,
+    <a href="https://github.com/gmosx" target="_blank">Github</a> and
+    <a href="https://linkedin.com/in/gmosx" target="_blank">LinkedIn</a>.
+</footer>
+  </body>
+</html>

@@ -1,57 +1,61 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
- <title>George Moschovitis</title>
- <link href="http://www.gmosx.com/atom.xml" rel="self"/>
- <link href="http://www.gmosx.com"/>
- <updated>2015-09-08T15:33:12.737Z</updated>
- <id>http://www.gmosx.com</id>
- <author>
-   <name>George Moschovitis</name>
-   <email>george.moschovitis@gmail.com</email>
- </author>
- 
-   
-     <entry>
-       <title>Protected members in Dart classes</title>
-       <link href="http://www.gmosx.com/posts/2015/02/18/protected-members-in-dart-classes.html"/>
-       <updated>2015-02-18T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com4f918a21-475f-4f6b-83e3-b48613dc99d8</id>
-       <content type="html">&lt;p&gt;In general, &lt;a href=&quot;http://dartlang.org&quot;&gt;Dart&lt;/a&gt; is a well designed language, but there
+    <title>gmosx.com</title>
+    <link href="http://gmosx.com/"/>
+    <link type="application/atom+xml" rel="self" href="http://gmosx.com/atom.xml"/>
+    <updated>{{site.update_time}}</updated>
+    <id>http://gmosx.com/</id>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <entry>
+    <id>http://gmosx.com/4f918a21-475f-4f6b-83e3-b48613dc99d8</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2015/02/18/protected-members-in-dart-classes.html"/>
+    <title>Protected members in Dart classes</title>
+    <published>2015-02-17 22:00:00 +0000</published>
+    <updated>2015-02-17 22:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>In general, <a href="http://dartlang.org/">Dart</a> is a well designed language, but there
 are some rough edges. Take for example the limited privacy options for class
-members: Dart only provides for private members where the boundary of privacy is
-the library.&lt;/p&gt;
-&lt;p&gt;While private members can get you a long way, often, what you are really
-looking for is a protected member, i.e. a private member that is still visible
-to sub-classes even if they are defined in &lt;em&gt;different&lt;/em&gt; libraries.&lt;/p&gt;
-&lt;p&gt;I guess, the canonical example is a UI framework offering e.g. a Button class.
-When extending the base class to create your own FancyButton, access to &#39;private&#39;
-implementation details is often required. Lack of protected access forces you
-to expose the implementation through public members.&lt;/p&gt;
-&lt;p&gt;Thankfully, there is a simple workaround. I will demonstrate with an example,
-leveraging the above-mentioned UI framework scenario. Let&#39;s start by defining a
-base Button class:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;library ui.button;
+members: Dart only provides for private members where the boundary of privacy
+is the library.</p>
+<p>While private members can get you a long way, often, what you are really looking
+for is a protected member, i.e. a private member that is still visible to
+sub-classes even if they are defined in <em>different</em> libraries.</p>
+<p>I guess, the canonical example is a UI framework offering e.g. a Button class.
+When extending the base class to create your own FancyButton, access to
+‘private’ implementation details is often required. Lack of protected access
+forces you to expose the implementation through public members.</p>
+<p>Thankfully, there is a simple workaround. I will demonstrate with an example,
+leveraging the above-mentioned UI framework scenario. Let’s start by defining
+a base Button class:</p>
+<pre><code>library ui.button;
 
-// &#39;Public&#39; API
+// 'Public' API
 abstract class Button {
   factory Button({HtmlElement host}) = ButtonImpl; // Redirecting constructor
   void click();
 }
 
-// &#39;Protected&#39; implementation
+// 'Protected' implementation
 abstract class ButtonImpl implements Button {
   ButtonImpl({this.host});
 
-  int state = 0; // &#39;protected&#39; implementation detail.
+  int state = 0; // 'protected' implementation detail.
 
   @override
   void click() {
     this.state = 1;
-    host.classes.add(&#39;selected&#39;);
+    host.classes.add('selected');
   }
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In your application, namespaced in another library, you define a custom button:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;library my.app.fancy_button; // notice, this is another library
+</code></pre>
+<p>In your application, name-spaced in another library, you define a custom button:</p>
+<pre><code>library my.app.fancy_button; // notice, this is another library
 
 abstract class FancyButton extends Button {
   factory FancyButton({String title, HtmlElement host}) = FancyButtonImpl;
@@ -62,272 +66,234 @@ class FancyButtonImpl extends ButtonImpl implements FancyButton {
 
   ButtonImpl({this.title, HtmlElement host}) : super(host: host);
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can use it like this:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;final button = new FancyButton(title: &quot;Cancel&quot;, host: element);
+</code></pre>
+<p>You can use it like this:</p>
+<pre><code>final button = new FancyButton(title: &quot;Cancel&quot;, host: element);
 
 button.title // =&gt; cannot access!
 button.state // =&gt; cannot access!
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You cannot access the &#39;protected&#39; members of FancyButton (or even
-Button&#39;s protected members, for that matter). As an added bonus, if you would
-like to side-step the protection (e.g. you are writing a unit-test and you
-would like to assert some implementation details) you can just instantiate the
-implementation class:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;final button = new FancyButtonImpl(title: &quot;Cancel&quot;, host: element);
+</code></pre>
+<p>You cannot access the ‘protected’ members of FancyButton (or even Button’s
+protected members, for that matter). As an added bonus, if you would like to
+side-step the protection (e.g. you are writing a unit-test and you would like
+to assert some implementation details) you can just instantiate the implementation
+class:</p>
+<pre><code>final button = new FancyButtonImpl(title: &quot;Cancel&quot;, host: element);
 
 expect(button.title, equals(&quot;Cancel&quot;)); // =&gt; true
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;While this workaround is relatively straightforward, I really hope Dart&#39;s
-designers will introduce a @protected annotation in the future. An annotation that
-is statically asserted (e.g. by the IDE or dart-analyzer) would be an elegant
-and practical solution.&lt;/p&gt;
+</code></pre>
+<p>While this workaround is relatively straightforward, I really hope Dart’s
+designers will introduce a @protected annotation in the future. An annotation
+that is statically asserted (e.g. by the IDE or dart-analyzer) would be an
+elegant and practical solution.</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Cool retro terminal</title>
-       <link href="http://www.gmosx.com/posts/2014/10/03/cool-retro-terminal.html"/>
-       <updated>2014-10-03T00:00:00.000Z</updated>
-       <id>http://www.gmosx.comb25843a4-4891-4da9-82e4-a09e47ad2370</id>
-       <content type="html">&lt;p&gt;I dig command line terminals, I dig retro computing, I dig cool stuff.
-And I absolutely &lt;em&gt;love&lt;/em&gt; this mind-blowing combination:&lt;br&gt;&lt;a href=&quot;https://github.com/Swordfish90/cool-retro-term&quot;&gt;cool-retro-term&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/posts/2014-10-03/amber-cool-retro-term.png&quot; alt=&quot;Amber flavor&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/posts/2014-10-03/green-cool-retro-term.png&quot; alt=&quot;Green flavor&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/posts/2014-10-03/scan-cool-retro-term.png&quot; alt=&quot;Scanlines&quot;&gt;&lt;/p&gt;
+</entry>
+<entry>
+    <id>http://gmosx.com/b25843a4-4891-4da9-82e4-a09e47ad2370</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/10/03/cool-retro-terminal.html"/>
+    <title>Cool retro terminal</title>
+    <published>2014-10-02 21:00:00 +0000</published>
+    <updated>2014-10-02 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>I dig command line terminals, I dig retro computing, I dig cool stuff. And I
+absolutely love this mind-blowing combination:</p>
+<p><a href="https://github.com/Swordfish90/cool-retro-term">cool-retro-term</a></p>
+<p><img src="/posts/2014/10/03/amber-cool-retro-term.png" alt="Amber flavor" /></p>
+<p><img src="/posts/2014/10/03/green-cool-retro-term.png" alt="Green flavor" /></p>
+<p><img src="/posts/2014/10/03/scan-lines-cool-retro-term.png" alt="Scan lines" /></p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Input font system</title>
-       <link href="http://www.gmosx.com/posts/2014/08/21/input-font-system.html"/>
-       <updated>2014-08-21T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com4ea1d02f-1ab5-426e-a4d3-dcf57ddc5a6e</id>
-       <content type="html">&lt;p&gt;Apart from writing code for fun and profit, I have a thing about fonts. It&#39;s
+</entry>
+<entry>
+    <id>http://gmosx.com/4ea1d02f-1ab5-426e-a4d3-dcf57ddc5a6e</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/08/21/input-font-system.html"/>
+    <title>Input font system</title>
+    <published>2014-08-20 21:00:00 +0000</published>
+    <updated>2014-08-20 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>Apart from writing code for fun and profit, I have a thing about fonts. It’s
 only natural then that programming fonts have a special place in my heart.
-Monospaced fonts are the defacto standard, but lately a radical idea came to my
-attention: &lt;a href=&quot;http://input.fontbureau.com/info/&quot;&gt;using proportionally spaced fonts for code&lt;/a&gt;
-and leaving the actual typesetting to the editor.&lt;/p&gt;
-&lt;p&gt;While I am still not convinced, I have to admit that the proponents of the idea,
-came up with a beautiful family of programming fonts called
-&#39;&lt;a href=&quot;http://input.fontbureau.com/&quot;&gt;Input&lt;/a&gt;&#39;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/posts/2014-08-21/input-font.png&quot; alt=&quot;Input font gallery&quot;&gt;&lt;/p&gt;
-&lt;p&gt;What can I say, it&#39;s my new favorite :)  &lt;/p&gt;
+Monospaced fonts are the de facto standard, but lately a radical idea came to my
+attention: <a href="http://input.fontbureau.com/info/">using proportionally spaced fonts for code</a>
+and leaving the actual typesetting to the editor.</p>
+<p>While I am still not convinced, I have to admit that the proponents of the idea,
+came up with a beautiful family of programming fonts
+called <a href="http://input.fontbureau.com/">Input</a>.</p>
+<p><img src="posts/2014/08/21/input-font.png" alt="Input font gallery" /></p>
+<p>What can I say, it’s my new favorite :)</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Luma</title>
-       <link href="http://www.gmosx.com/posts/2014/08/07/luma.html"/>
-       <updated>2014-08-07T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com2f626f25-b352-4d3a-a851-72735ac5aea5</id>
-       <content type="html">&lt;p&gt;&lt;p&gt;
-So &lt;a href=&quot;http://www.makeuseof.com/tag/retrovision-enjoy-oldschool-demo-scene-modern-pc-stuff-watch/&quot;&gt;old-school&lt;/a&gt;,
+</entry>
+<entry>
+    <id>http://gmosx.com/2f626f25-b352-4d3a-a851-72735ac5aea5</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/08/07/luma.html"/>
+    <title>Luma</title>
+    <published>2014-08-06 21:00:00 +0000</published>
+    <updated>2014-08-06 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html">
+<p>
+So <a href="http://www.makeuseof.com/tag/retrovision-enjoy-oldschool-demo-scene-modern-pc-stuff-watch/">old-school</a>,
 yet so modern. I especially like the music!
-&lt;/p&gt;&lt;/p&gt;
-&lt;div class=&quot;video&quot;&gt;
-  &lt;iframe title=&quot;YouTube video player&quot; width=&quot;700&quot; height=&quot;394&quot; src=&quot;http://www.youtube.com/embed/WBuoyegCeXI&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-&lt;/div&gt;
-</content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Were are we today?</title>
-       <link href="http://www.gmosx.com/posts/2014/08/05/were-are-we-today.html"/>
-       <updated>2014-08-05T00:00:00.000Z</updated>
-       <id>http://www.gmosx.come5397c9c-c843-4604-b14d-6281f1eb7538</id>
-       <content type="html">&lt;p&gt;&amp;rarr; &lt;a href=&quot;http://continuations.com/post/92628450440/is-it-1880-or-1914&quot;&gt;Is it 1880 or 1914?&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A lot about where we are today has similar characteristics. We have all of the
+</p>
+<div class="video">
+  <iframe title="YouTube video player" width="658" height="371" src="http://www.youtube.com/embed/WBuoyegCeXI" frameborder="0" allowfullscreen=""></iframe>
+</div></content>
+</entry>
+<entry>
+    <id>http://gmosx.com/e5397c9c-c843-4604-b14d-6281f1eb7538</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/08/05/were-are-we-today.html"/>
+    <title>Were are we today?</title>
+    <published>2014-08-04 21:00:00 +0000</published>
+    <updated>2014-08-04 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>→ <a href="http://continuations.com/post/92628450440/is-it-1880-or-1914">Is it 1880 or 1914?</a></p>
+<blockquote>
+<p>A lot about where we are today has similar characteristics. We have all of the
 ingredients for an information society in place: a global network that
 connects everyone, rapidly improving machine learning and automation, additive
 manufacturing and robotics (to name just a few key ingredients). We also have
 globalized many aspects of the economy with global corporations and supply
-chains.&lt;/p&gt;
-&lt;p&gt;Yet again the political leadership throughout the world is still largely
+chains.</p>
+<p>Yet again the political leadership throughout the world is still largely
 thinking in industrial terms, including emphasizing the nation state as the
 geographic organizing principle (and playing up ethnic and religious
 differences). Once again we also have large groups of people who feel pushed
-around or left behind by the emerging information economy.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;I am consistently surprised that people around me don&#39;t realize what is &lt;em&gt;really
-happening&lt;/em&gt; in the world today. We live in dangerous times. You better expect
+around or left behind by the emerging information economy.</p>
+</blockquote>
+<p>I am consistently surprised that people around me don’t realize what is <em>really
+happening</em> in the world today. We live in dangerous times. You better expect
 (and prepare for) some disruptive changes within this decade. And I am not talking
-about Valey-style, hipster disruption here...&lt;/p&gt;
+about Valey-style, hipster disruption here…</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Right-size precision</title>
-       <link href="http://www.gmosx.com/posts/2014/08/04/right-size-precision.html"/>
-       <updated>2014-08-04T00:00:00.000Z</updated>
-       <id>http://www.gmosx.comdeb497ba-128d-4715-9ed7-a22398912001</id>
-       <content type="html">&lt;p&gt;&amp;rarr; &lt;a href=&quot;http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf&quot;&gt;The need to right-size precision to save energy, bandwidth, storage, and electrical power&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;The representation of real numbers within computers leaves a lot to be desired.
+</entry>
+<entry>
+    <id>http://gmosx.com/deb497ba-128d-4715-9ed7-a22398912001</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/08/04/right-size-precision.html"/>
+    <title>Right-size precision</title>
+    <published>2014-08-03 21:00:00 +0000</published>
+    <updated>2014-08-03 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>→ <a href="http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf">The need to right-size precision to save energy, bandwidth, storage, and electrical power</a></p>
+<p>The representation of real numbers within computers leaves a lot to be desired.
 Every programmer is bitten at some point by floating point precision issues.
-Open a JavaScript console and type 0.1 + 0.2 for the canonical example. &lt;a href=&quot;http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf&quot;&gt;This
-fascinating paper&lt;/a&gt;
+Open a JavaScript console and type 0.1 + 0.2 for the canonical example. <a href="http://sites.ieee.org/scv-cs/files/2013/03/Right-SizingPrecision1.pdf">This
+fascinating paper</a>
 frames the problem in whole new perspective and proposes a couple of innovative
-solutions. As the author says...&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Let’s make computer math much smarter than what it was in 1914!&lt;/p&gt;
-&lt;/blockquote&gt;
+solutions. As the author says…</p>
+<blockquote>
+<p>Let’s make computer math much smarter than what it was in 1914!</p>
+</blockquote>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>No Juju for you!</title>
-       <link href="http://www.gmosx.com/posts/2014/08/03/no-juju-for-you.html"/>
-       <updated>2014-08-03T00:00:00.000Z</updated>
-       <id>http://www.gmosx.comfb26844e-2626-4553-a511-9635f73067e1</id>
-       <content type="html">&lt;p&gt;&amp;rarr; &lt;a href=&quot;http://www.turnkeylinux.org/blog/ubuntu-not-invented-here-syndrome&quot;&gt;Ubuntu&#39;s Not Invented Here syndrome&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;A well-articulated analysis, the following quote particularly resonated with me:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;I don&#39;t think that Canonical is bad at what it does. It&#39;s just that they&#39;re
-rarely the best and being mediocre (or even second best) isn&#39;t good enough
+</entry>
+<entry>
+    <id>http://gmosx.com/fb26844e-2626-4553-a511-9635f73067e1</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2014/08/03/ubuntus-not-invented-here-syndrome.html"/>
+    <title>No Juju for you!</title>
+    <published>2014-08-02 21:00:00 +0000</published>
+    <updated>2014-08-02 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>→ <a href="http://www.turnkeylinux.org/blog/ubuntu-not-invented-here-syndrome">Ubuntu’s Not Invented Here syndrome</a></p>
+<p>A well-articulated analysis, the following quote particularly resonated with me:</p>
+<blockquote>
+<p>I don’t think that Canonical is bad at what it does. It’s just that they’re
+rarely the best and being mediocre (or even second best) isn’t good enough
 when the tournament effect is at work. The winner takes home the pot (e.g.,
-becomes the new standard) and Canonical isn&#39;t winning.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Switching to Unity and competing on so many fronts was a mistake, Canonical is
+becomes the new standard) and Canonical isn’t winning.</p>
+</blockquote>
+<p>Switching to Unity and competing on so many fronts was a mistake, Canonical is
 spread too thin. Still, the latest LTS release is pretty solid and pleasingly
 refined. I plan to stick with Ubuntu some more, these days my mantra is to be
-conservative with platform changes. If &lt;a href=&quot;https://wiki.ubuntu.com/UnityNextSpec&quot;&gt;things&lt;/a&gt;
-don&#39;t work-out, there is always a safe &lt;a href=&quot;http://www.debian.org&quot;&gt;fallback&lt;/a&gt;.&lt;/p&gt;
+conservative with platform changes. If <a href="https://wiki.ubuntu.com/UnityNextSpec">things</a>
+don’t work-out, there is always a safe <a href="http://www.debian.org">fallback</a>.</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>The evolution of browsers</title>
-       <link href="http://www.gmosx.com/posts/2011/09/18/The-evolution-of-browsers.html"/>
-       <updated>2011-09-18T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com80eb9f7e-a1de-45b1-9a25-48773f12f53b</id>
-       <content type="html">&lt;p&gt;A new month, &lt;a href=&quot;http://chrome.blogspot.com/2011/09/new-stable-release-of-chrome-expanding.html&quot;&gt;a new version of Chrome is released&lt;/a&gt;.
-Don&#39;t get me wrong, &lt;a href=&quot;http://webaudio.github.io/web-audio-api/&quot;&gt;Web Audio&lt;/a&gt; is
+</entry>
+<entry>
+    <id>http://gmosx.com/80eb9f7e-a1de-45b1-9a25-48773f12f53b</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2011/09/18/The-evolution-of-browsers.html"/>
+    <title>The evolution of browsers</title>
+    <published>2011-09-17 21:00:00 +0000</published>
+    <updated>2011-09-17 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>A new month, <a href="http://chrome.blogspot.com/2011/09/new-stable-release-of-chrome-expanding.html">a new version of Chrome is released</a>.
+Don’t get me wrong, <a href="http://webaudio.github.io/web-audio-api/">Web Audio</a> is
 interesting (one more nail in the coffin for Flash) and
-&lt;a href=&quot;https://developer.chrome.com/native-client&quot;&gt;Native Client&lt;/a&gt; may be
+<a href="https://developer.chrome.com/native-client">Native Client</a> may be
 a solution to the primary roadblock in the evolution of the Web towards an
-application platform (namely JavaScript).&lt;/p&gt;
-&lt;p&gt;Still,  I would prefer browser vendors to go after some low-hanging fruit first.
+application platform (namely JavaScript).</p>
+<p>Still,  I would prefer browser vendors to go after some low-hanging fruit first.
 I mean, emerging HTML5 technologies are cool and all, but how about
 concentrating on the actual HTML part first? How about implementing common
 forms controls (date/time pickers, rich text editors, improved validation and
-more)? How about fully implementing &lt;a href=&quot;http://www.w3.org/TR/CSS2/page.html&quot;&gt;CSS Paged Media&lt;/a&gt;?
-How about implementing &lt;a href=&quot;http://www.w3.org/Math/&quot;&gt;MathML&lt;/a&gt;? How about replacing
-.pdf with .html first and then focus on killing Flash?&lt;/p&gt;
-&lt;p&gt;And while we are at it, how about improving bookmark management in Chrome?
+more)? How about fully implementing <a href="http://www.w3.org/TR/CSS2/page.html">CSS Paged Media</a>?
+How about implementing <a href="http://www.w3.org/Math/">MathML</a>? How about replacing
+.pdf with .html first and then focus on killing Flash?</p>
+<p>And while we are at it, how about improving bookmark management in Chrome?
 The current interface leaves a lot to be desired (i.g. multiple categorization
 of bookmarks using tags and/or hierarchical folders, similar to the
-categorization available in Google Docs).&lt;/p&gt;
-&lt;p&gt;In short, I would like to see more pragmatic features sooner rather than later.&lt;/p&gt;
+categorization available in Google Docs).</p>
+<p>In short, I would like to see more pragmatic features sooner rather than later.</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Nasty Java catch</title>
-       <link href="http://www.gmosx.com/posts/2011/03/17/nasty-java-catch.html"/>
-       <updated>2011-03-17T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com0aca64cc-2d3d-4d53-aa28-f20cf5d7e4f6</id>
-       <content type="html">&lt;p&gt;Some time ago, I wrote about &lt;a href=&quot;/posts/2009/08/nasty-javascript-catch.html&quot;&gt;a nasty JavaScript catch&lt;/a&gt;. Well, it seems that no
-language is immune from nasty surprises, so here comes one for Java:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;BigDecimal value = new BigDecimal(&quot;0.31&quot;);
+</entry>
+<entry>
+    <id>http://gmosx.com/0aca64cc-2d3d-4d53-aa28-f20cf5d7e4f6</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2011/03/17/nasty-java-catch.html"/>
+    <title>Nasty Java catch</title>
+    <published>2011-03-16 22:00:00 +0000</published>
+    <updated>2011-03-16 22:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>Some time ago, I wrote about <a href="/posts/2009/08/nasty-javascript-catch.html">a nasty JavaScript catch</a>. Well, it seems that no
+language is immune from nasty surprises, so here comes one for Java:</p>
+<pre><code>BigDecimal value = new BigDecimal(&quot;0.31&quot;);
 BigDecimal oldValue = new BigDecimal(&quot;0.34&quot;);
 BigDecimal ratio = value.divide(oldValue);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;throws:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Funky, huh? Let me offer a quick fix:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;BigDecimal ratio = value.divide(oldValue, BigDecimal.ROUND_HALF_EVEN);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For some intuition (in &lt;a href=&quot;http://www.khanacademy.org&quot;&gt;Khan&lt;/a&gt;&#39;s parlance), have a look &lt;a href=&quot;http://jaydeepm.wordpress.com/2009/06/04/bigdecimal-and-non-terminating-decimal-expansion-error/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</code></pre>
+<p>throws:</p>
+<pre><code>java.lang.ArithmeticException: Non-terminating decimal expansion; no exact representable decimal result.
+</code></pre>
+<p>Funky, huh? Let me offer a quick fix:</p>
+<pre><code>BigDecimal ratio = value.divide(oldValue, BigDecimal.ROUND_HALF_EVEN);
+</code></pre>
+<p>For some intuition (in <a href="http://www.khanacademy.org">Khan</a>’s parlance), have a look <a href="http://jaydeepm.wordpress.com/2009/06/04/bigdecimal-and-non-terminating-decimal-expansion-error/">here</a>.</p>
 </content>
-     </entry>
-   
- 
-   
-     <entry>
-       <title>Ultra geeky holiday e-Card</title>
-       <link href="http://www.gmosx.com/posts/2011/02/04/ultra-geeky-holiday-e-card.html"/>
-       <updated>2011-02-04T00:00:00.000Z</updated>
-       <id>http://www.gmosx.com8795d419-c73a-4247-b646-d0936b2bca35</id>
-       <content type="html">&lt;p&gt;&lt;p&gt;
+</entry>
+<entry>
+    <id>http://gmosx.com/8795d419-c73a-4247-b646-d0936b2bca35</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2011/02/04/ultra-geeky-holiday-e-card.html"/>
+    <title>Ultra geeky holiday e-Card</title>
+    <published>2011-02-03 22:00:00 +0000</published>
+    <updated>2011-02-03 22:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html">
+<p>
 This came to my attention and I had to share it:
-&lt;/p&gt;&lt;/p&gt;
-&lt;div class=&quot;video&quot;&gt;&lt;iframe title=&quot;YouTube video player&quot; width=&quot;700&quot; height=&quot;394&quot; src=&quot;http://www.youtube.com/embed/VRdZcA41EJc&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+</p>
+<div class="video"><iframe title="YouTube video player" width="658" height="371" src="http://www.youtube.com/embed/VRdZcA41EJc" frameborder="0" allowfullscreen=""></iframe></div>
 </content>
-     </entry>
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
+</entry>
 </feed>
