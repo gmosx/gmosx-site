@@ -11,6 +11,27 @@
 </author>
     <entry>
     <id>http://gmosx.com/4f918a21-475f-4f6b-83e3-b48613dc99d8</id>
+    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2018/04/14/new-season.html"/>
+    <title>New season</title>
+    <published>2018-04-13 21:00:00 +0000</published>
+    <updated>2018-04-13 21:00:00 +0000</updated>
+    <author>
+    <name>George Moschovitis</name>
+    <email>george.moschovitis@gmail.com</email>
+</author>
+    <content type="html"><p>So, <em>3 years</em> passed. What a difference three years
+can make. The universe gives, the universe takes. In the end, you are
+a different person, yet some (bad) habits never die.</p>
+<p>Take for example the reengineering of this blog, every few years. Since I moved on from <a href="https://www.dartlang.org">Dart</a>, and I plan to post some new
+articles, I had an excuse to convert the engine to <a href="https://swift.org">Swift</a>.
+At least, the content was encoded in open file formats (<a href="http://yaml.org">YAML</a>, <a href="http://commonmark.org">Markdown</a>,
+<a href="https://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a>, etc), really a
+bunch of files in a directory, so the conversion was trivial.</p>
+<p>I will spare you the boring details.</p>
+</content>
+</entry>
+<entry>
+    <id>http://gmosx.com/4f918a21-475f-4f6b-83e3-b48613dc99d8</id>
     <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2015/02/18/protected-members-in-dart-classes.html"/>
     <title>Protected members in Dart classes</title>
     <published>2015-02-17 22:00:00 +0000</published>
@@ -277,23 +298,6 @@ BigDecimal ratio = value.divide(oldValue);
 <pre><code>BigDecimal ratio = value.divide(oldValue, BigDecimal.ROUND_HALF_EVEN);
 </code></pre>
 <p>For some intuition (in <a href="http://www.khanacademy.org">Khan</a>’s parlance), have a look <a href="http://jaydeepm.wordpress.com/2009/06/04/bigdecimal-and-non-terminating-decimal-expansion-error/">here</a>.</p>
-</content>
-</entry>
-<entry>
-    <id>http://gmosx.com/8795d419-c73a-4247-b646-d0936b2bca35</id>
-    <link type="text/html" rel="alternate" href="http://gmosx.com/posts/2011/02/04/ultra-geeky-holiday-e-card.html"/>
-    <title>Ultra geeky holiday e-Card</title>
-    <published>2011-02-03 22:00:00 +0000</published>
-    <updated>2011-02-03 22:00:00 +0000</updated>
-    <author>
-    <name>George Moschovitis</name>
-    <email>george.moschovitis@gmail.com</email>
-</author>
-    <content type="html">
-<p>
-This came to my attention and I had to share it:
-</p>
-<div class="video"><iframe title="YouTube video player" width="658" height="371" src="http://www.youtube.com/embed/VRdZcA41EJc" frameborder="0" allowfullscreen=""></iframe></div>
 </content>
 </entry>
 </feed>
