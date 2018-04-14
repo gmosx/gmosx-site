@@ -92,7 +92,7 @@ article .video,article blockquote,article footer,article img,article ol,article 
     width:700px;
     margin:1em auto
 }
-article footer .labels span{
+article footer .labels a{
     margin-top:15px;
     display:inline-block;
     background-color:#999;
@@ -102,10 +102,11 @@ article footer .labels span{
     border-radius:3px;
     -webkit-transition:background-color .5s;
     transition:background-color .5s;
-    cursor:default
+    cursor:pointer
 }
-article footer .labels span:hover{
-    background-color:#777
+article footer .labels a:hover{
+    background-color:#777;
+    text-decoration: none;
 }
 pre{
     overflow:auto;
